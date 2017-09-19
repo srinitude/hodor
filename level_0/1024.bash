@@ -1,5 +1,5 @@
 #!/bin/bash
-for i in {0..1024}; do
+for i in {0..1025}; do
     curl 'http://158.69.76.135/level0.php' \
 -XPOST \
 -H 'Origin: http://158.69.76.135' \
