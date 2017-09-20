@@ -174,7 +174,7 @@ get_initial_data(endpoint, hodor_cookie, hodor_payload)
 
 for i in student_ids:
     update_id(hodor_payload, i)
-    for i in range(1024):
+    for j in range(1024):
         res = cast_vote(endpoint, hodor_cookie, hodor_payload)
-        print("Vote #{:d} casted".format(i))
+        print("Vote #{:d} casted".format(j))
         update_cookie_and_payload(res, hodor_cookie, hodor_payload)
