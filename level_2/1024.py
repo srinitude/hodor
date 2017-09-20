@@ -167,11 +167,12 @@ student_ids = [13,
                261,
                262,
                263,
-               264]
+               264
+]
 
 get_initial_data(endpoint, hodor_cookie, hodor_payload)
 
-for i in student_ids[7:]:
+for i in student_ids:
     update_id(hodor_payload, i)
     for i in range(1024):
         res = cast_vote(endpoint, hodor_cookie, hodor_payload)
