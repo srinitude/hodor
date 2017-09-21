@@ -44,7 +44,7 @@ endpoint = "http://158.69.76.135/level2.php"
 
 get_initial_data(endpoint, hodor_cookie, hodor_payload)
 
-for i in range(1024):
+for i in range(1, 1025):
     res = cast_vote(endpoint, hodor_cookie, hodor_payload)
     print("Vote #{:d} casted".format(i))
     update_cookie_and_payload(res, hodor_cookie, hodor_payload)
