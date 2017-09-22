@@ -21,6 +21,8 @@ def grab_captcha_text(cookie, url):
         try:
             with open("captcha.png", "rb") as pic_file:
                 img = Image.open(pic_file)
+                img.convert("RGBA")
+                img.save("captcha.png")
                 return pytesseract.image_to_string(img)
         except IOError:
             print("Couldn't open image")
