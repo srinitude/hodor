@@ -32,15 +32,14 @@ def update_cookie_and_payload(res, cookie, payload, captcha=None):
     Updates the cookie and payload as each vote gets cast
     """
     print(res.text)
-    print(captcha)
     tree = html.fromstring(res.text)
     key = str(tree.xpath('//input[@name="key"]/@value')[0])
     payload["key"] = key
+    cookie["PHPSESSID"] = res.cookies["PHPSESSID"]
+    cookie["HoldTheDoor"] = res.cookies["HoldTheDoor"]
     if not captcha:
         captcha = grab_captcha_text(cookie, CAPTCHA_URL)
     payload["captcha"] = captcha
-    cookie["PHPSESSID"] = res.cookies["PHPSESSID"]
-    cookie["HoldTheDoor"] = res.cookies["HoldTheDoor"]
     print(cookie)
     print(payload)
 
