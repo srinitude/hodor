@@ -21,9 +21,7 @@ def grab_captcha_text(cookie, url):
         try:
             with open("captcha.png", "rb") as pic_file:
                 img = Image.open(pic_file)
-                img.convert("RGBA")
-                img.save("captcha_rgb.png")
-                return pytesseract.image_to_string(Image.open("captcha_rgb.png"))
+                return str(pytesseract.image_to_string(img))
         except IOError:
             print("Couldn't open image")
 
@@ -35,8 +33,9 @@ def update_cookie_and_payload(res, cookie, payload, captcha=None):
     tree = html.fromstring(res.text)
     key = str(tree.xpath('//input[@name="key"]/@value')[0])
     payload["key"] = key
-    cookie["PHPSESSID"] = res.cookies["PHPSESSID"]
     cookie["HoldTheDoor"] = res.cookies["HoldTheDoor"]
+    if not "PHPSESSID" in cookie:
+        cookie["PHPSESSID"] = res.cookies["PHPSESSID"]
     if not captcha:
         captcha = grab_captcha_text(cookie, CAPTCHA_URL)
     payload["captcha"] = captcha
