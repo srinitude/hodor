@@ -32,14 +32,17 @@ def update_cookie_and_payload(res, cookie, payload, captcha=None):
     Updates the cookie and payload as each vote gets cast
     """
     print(res.text)
+    print(captcha)
     tree = html.fromstring(res.text)
     key = str(tree.xpath('//input[@name="key"]/@value')[0])
     payload["key"] = key
-    if captcha:
-        payload["captcha"] = captcha
+    if not captcha:
+        captcha = grab_captcha_text(cookie, CAPTCHA_URL)
+    payload["captcha"] = captcha
     cookie["PHPSESSID"] = res.cookies["PHPSESSID"]
     cookie["HoldTheDoor"] = res.cookies["HoldTheDoor"]
     print(cookie)
+    print(payload)
 
 def get_initial_data(url, cookie, payload):
     """
@@ -74,5 +77,4 @@ if __name__ == "__main__":
     for i in range(1, 1025):
         res = cast_vote(ENDPOINT, hodor_cookies, hodor_payload)
         captcha = grab_captcha_text(hodor_cookies, CAPTCHA_URL)
-        print(captcha)
         update_cookie_and_payload(res, hodor_cookies, hodor_payload, captcha)
