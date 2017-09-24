@@ -51,10 +51,10 @@ if __name__ == "__main__":
     proxies = {}
     ENDPOINT = "http://158.69.76.135/level4.php"
     proxie_list = load_proxies()
-    next_proxy = proxie_list.next().address()
+    next_proxy = proxie_list.random().address()
     get_initial_data(ENDPOINT, hodor_cookies, hodor_payload, next_proxy, proxies)
 
     while True:
         res = cast_vote(ENDPOINT, hodor_cookies, hodor_payload, proxies)
-        next_proxy = proxie_list.next().address()
+        next_proxy = proxie_list.random().address()
         update_cookie_and_payload(res, hodor_cookies, hodor_payload, next_proxy, proxies)
