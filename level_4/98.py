@@ -5,13 +5,14 @@ Voting 98 times as a different user every time
 
 import requests
 from proxylist import ProxyList
+from lxml import html
 
 def load_proxies():
     pl = ProxyList()
     pl.load_file("./proxy.txt")
     return pl
 
-def update_cookie_and_payload(res, cookie, payload):
+def update_cookie_and_payload(res, cookie, payload, proxy, proxies):
     """
     Updates the cookie and payload as each vote gets cast
     """
@@ -19,17 +20,16 @@ def update_cookie_and_payload(res, cookie, payload):
     key = str(tree.xpath('//input[@name="key"]/@value')[0])
     payload["key"] = key
     cookie["HoldTheDoor"] = res.cookies["HoldTheDoor"]
-    if not "PHPSESSID" in cookie:
-        cookie["PHPSESSID"] = res.cookies["PHPSESSID"]
+    proxies["http"] = proxy
 
-def get_initial_data(url, cookie, payload):
+def get_initial_data(url, cookie, payload, proxy, proxies):
     """
     Retrieves the initial cookie and payload
     """
     res = requests.get(url)
-    update_cookie_and_payload(res, cookie, payload)
+    update_cookie_and_payload(res, cookie, payload, proxy, proxies)
 
-def cast_vote(url, cookie, payload):
+def cast_vote(url, cookie, payload, proxies):
     """
     Casts a vote as if you were on Windows
     """
@@ -38,7 +38,8 @@ def cast_vote(url, cookie, payload):
         "Referer": url,
         "User-Agent": user_agent
     }
-    res = requests.post(url, data=payload, cookies=cookie, headers=header)
+    res = requests.post(url, data=payload, cookies=cookie, headers=header, proxies=proxies)
+    print(res.text)
     return res
 
 if __name__ == "__main__":
@@ -47,10 +48,13 @@ if __name__ == "__main__":
         "holdthedoor": "Submit",
         "id": "139",
     }
+    proxies = {}
     ENDPOINT = "http://158.69.76.135/level4.php"
-    proxies = load_proxies()
-    get_initial_data(ENDPOINT, hodor_cookies, hodor_payload)
+    proxie_list = load_proxies()
+    next_proxy = proxie_list.next().address()
+    get_initial_data(ENDPOINT, hodor_cookies, hodor_payload, next_proxy, proxies)
 
     while True:
-        res = cast_vote(ENDPOINT, hodor_cookies, hodor_payload)
-        update_cookie_and_payload(res, hodor_cookies, hodor_payload)
+        res = cast_vote(ENDPOINT, hodor_cookies, hodor_payload, proxies)
+        next_proxy = proxie_list.next().address()
+        update_cookie_and_payload(res, hodor_cookies, hodor_payload, next_proxy, proxies)
